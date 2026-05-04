@@ -349,6 +349,162 @@
         padding: 11px 16px;
       }
     }
+
+    /* Ajuste de tarjetas compactas: reduce espacios vacíos en cuadros con poco texto */
+    section {
+      padding: 82px 24px;
+    }
+
+    .card,
+    .flow-step,
+    .theory-card,
+    .team-card,
+    .stat,
+    .metric-card {
+      min-height: auto;
+    }
+
+    .pad {
+      padding: 22px;
+    }
+
+    .card h3,
+    .flow-step h3,
+    .theory-card h3,
+    .team-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .card p,
+    .card li,
+    .flow-step p,
+    .metric-card p,
+    .theory-card p,
+    .team-card p {
+      font-size: 15px;
+      line-height: 1.62;
+    }
+
+    .flow {
+      gap: 12px;
+    }
+
+    .flow-step {
+      min-height: 132px;
+      padding: 18px;
+      border-radius: 22px;
+    }
+
+    .theory-grid {
+      gap: 18px;
+    }
+
+    .theory-card {
+      min-height: 168px;
+      padding: 22px;
+      border-radius: 24px;
+    }
+
+    .theory-card h3 {
+      font-size: 22px;
+    }
+
+    .big-stats {
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 22px;
+      border-radius: 24px;
+    }
+
+    .stat strong {
+      font-size: clamp(32px, 4vw, 52px);
+    }
+
+    .stat span {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .team-grid {
+      gap: 16px;
+    }
+
+    .team-card {
+      min-height: 178px;
+      padding: 22px;
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .team-avatar {
+      width: 58px;
+      height: 58px;
+      margin-bottom: 14px;
+      border-radius: 18px;
+      font-size: 19px;
+    }
+
+    .team-card h3 {
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .team-card p {
+      margin-top: 8px;
+    }
+
+    .team-role {
+      margin-top: 14px;
+      padding: 7px 10px;
+      font-size: 11px;
+    }
+
+    #resultados .grid-3,
+    #limitaciones .grid-4,
+    #final-modelo .grid-2 {
+      gap: 14px;
+    }
+
+    #resultados .grid-3 .card,
+    #limitaciones .grid-4 .card,
+    #final-modelo .grid-2 .card,
+    #dataset .grid-3 .card {
+      padding: 20px;
+      border-radius: 22px;
+    }
+
+    #resultados .grid-3 .card h3,
+    #limitaciones .grid-4 .card h3,
+    #final-modelo .grid-2 .card h3,
+    #dataset .grid-3 .card h3 {
+      font-size: 19px;
+    }
+
+    .example-box {
+      padding: 16px;
+      border-radius: 18px;
+    }
+
+    @media (max-width: 640px) {
+      section {
+        padding: 56px 16px;
+      }
+
+      .team-card,
+      .theory-card,
+      .flow-step,
+      #resultados .grid-3 .card,
+      #limitaciones .grid-4 .card,
+      #final-modelo .grid-2 .card,
+      #dataset .grid-3 .card {
+        padding: 18px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -637,10 +793,31 @@
       </div>
     </section>
 
+    <section id="mejor-modelo">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">10 · Mejor modelo</div>
+          <h2>Regresión Logística Binaria fue el modelo con mejor rendimiento general.</h2>
+          <p class="lead">El modelo combinó alta precisión, bajo error y entrenamiento rápido, lo que lo vuelve ideal para aplicaciones en tiempo real.</p>
+        </div>
+        <div class="big-stats reveal">
+          <div class="stat"><strong>99.8%</strong><span>Accuracy</span></div>
+          <div class="stat"><strong>99.9%</strong><span>Precision</span></div>
+          <div class="stat"><strong>99.7%</strong><span>Recall</span></div>
+        </div>
+        <div class="grid-3" style="margin-top: 18px;">
+          <div class="stat reveal"><strong>99.8%</strong><span>F1-Score</span></div>
+          <div class="stat reveal"><strong>0.0021</strong><span>MSE</span></div>
+          <div class="stat reveal"><strong>0.9915</strong><span>R²</span></div>
+        </div>
+      </div>
+    </section>
+
+
     <section id="resultados">
       <div class="container">
         <div class="section-heading reveal">
-          <div class="section-kicker">10 · Resultados y evaluación</div>
+          <div class="section-kicker">11 · Resultados y evaluación</div>
           <h2>¿Qué tan bien funciona TrueFace?</h2>
           <p class="lead">Se evaluaron cinco modelos usando métricas de clasificación y error para identificar cuál detectaba mejor imágenes reales y deepfake.</p>
         </div>
@@ -655,26 +832,6 @@
           <div class="card pad reveal"><h3>F1-Score</h3><p>Equilibrio entre precision y recall.</p></div>
           <div class="card pad reveal"><h3>MSE / RMSE</h3><p>Nivel de error del modelo.</p></div>
           <div class="card pad reveal"><h3>R²</h3><p>Qué tan bien se ajusta el modelo a los datos.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="mejor-modelo">
-      <div class="container">
-        <div class="section-heading reveal">
-          <div class="section-kicker">11 · Mejor modelo</div>
-          <h2>Regresión Logística Binaria fue el modelo con mejor rendimiento general.</h2>
-          <p class="lead">El modelo combinó alta precisión, bajo error y entrenamiento rápido, lo que lo vuelve ideal para aplicaciones en tiempo real.</p>
-        </div>
-        <div class="big-stats reveal">
-          <div class="stat"><strong>99.8%</strong><span>Accuracy</span></div>
-          <div class="stat"><strong>99.9%</strong><span>Precision</span></div>
-          <div class="stat"><strong>99.7%</strong><span>Recall</span></div>
-        </div>
-        <div class="grid-3" style="margin-top: 18px;">
-          <div class="stat reveal"><strong>99.8%</strong><span>F1-Score</span></div>
-          <div class="stat reveal"><strong>0.0021</strong><span>MSE</span></div>
-          <div class="stat reveal"><strong>0.9915</strong><span>R²</span></div>
         </div>
       </div>
     </section>
