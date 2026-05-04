@@ -838,37 +838,16 @@
       </div>
     </section>
 
-    <section id="mejor-modelo">
-      <div class="container">
-        <div class="section-heading reveal">
-          <div class="section-kicker">10 · Mejor modelo</div>
-          <h2>Regresión Logística Binaria fue el modelo con mejor rendimiento general.</h2>
-          <p class="lead">El modelo combinó alta precisión, bajo error y entrenamiento rápido, lo que lo vuelve ideal para aplicaciones en tiempo real.</p>
-        </div>
-        <div class="big-stats reveal">
-          <div class="stat"><strong>99.8%</strong><span>Accuracy</span></div>
-          <div class="stat"><strong>99.9%</strong><span>Precision</span></div>
-          <div class="stat"><strong>99.7%</strong><span>Recall</span></div>
-        </div>
-        <div class="grid-3" style="margin-top: 18px;">
-          <div class="stat reveal"><strong>99.8%</strong><span>F1-Score</span></div>
-          <div class="stat reveal"><strong>0.0021</strong><span>MSE</span></div>
-          <div class="stat reveal"><strong>0.9915</strong><span>R²</span></div>
-        </div>
-      </div>
-    </section>
-
-
     <section id="resultados">
       <div class="container">
         <div class="section-heading reveal">
-          <div class="section-kicker">11 · Resultados y evaluación</div>
-          <h2>¿Qué tan bien funciona TrueFace?</h2>
-          <p class="lead">Se evaluaron cinco modelos usando métricas de clasificación y error para identificar cuál detectaba mejor imágenes reales y deepfake.</p>
+          <div class="section-kicker">10 · Resultados del modelo binario</div>
+          <h2>Resultados del modelo binario seleccionado.</h2>
+          <p class="lead">Las métricas mostradas corresponden al modelo binario final de Regresión Logística, seleccionado para clasificar cada imagen facial en una de dos clases: <strong>Real</strong> o <strong>Fake</strong>.</p>
         </div>
         <div class="grid-2">
-          <div class="chart-card reveal"><h3>Métricas de clasificación</h3><canvas id="barChart" width="520" height="310" aria-label="Gráfica de métricas de clasificación"></canvas></div>
-          <div class="chart-card reveal"><h3>Análisis de error</h3><canvas id="errorChart" width="520" height="310" aria-label="Gráfica de error"></canvas></div>
+          <div class="chart-card reveal"><h3>Métricas del modelo binario</h3><canvas id="barChart" width="520" height="310" aria-label="Gráfica de métricas de clasificación"></canvas></div>
+          <div class="chart-card reveal"><h3>Error del modelo binario</h3><canvas id="errorChart" width="520" height="310" aria-label="Gráfica de error"></canvas></div>
         </div>
         <div class="grid-3" style="margin-top: 24px;">
           <div class="card pad reveal"><h3>Accuracy</h3><p>Porcentaje total de aciertos.</p></div>
@@ -884,7 +863,7 @@
     <section id="confusion">
       <div class="container grid-2">
         <div class="reveal">
-          <div class="section-kicker">12 · Matriz de confusión</div>
+          <div class="section-kicker">11 · Matriz de confusión</div>
           <h2>Errores detectados en prueba.</h2>
           <p class="lead">El sistema registró muy pocos errores en el conjunto de prueba.</p>
           <div class="example-box"><strong>Errores:</strong><br />Real marcado como fake: <span class="code-pill">4 casos</span><br />Fake marcado como real: <span class="code-pill">11 casos</span></div>
@@ -902,7 +881,7 @@
     <section id="analisis-error">
       <div class="container grid-2">
         <div class="card pad reveal">
-          <div class="section-kicker">13 · Análisis de error</div>
+          <div class="section-kicker">12 · Análisis de error</div>
           <h2>¿Qué tan confiable es el modelo?</h2>
           <p class="lead">Se analizaron métricas de error para evaluar precisión y estabilidad.</p>
         </div>
@@ -920,7 +899,7 @@
     <section id="final-modelo">
       <div class="container grid-2">
         <div class="reveal">
-          <div class="section-kicker">14 · Modelo final</div>
+          <div class="section-kicker">13 · Modelo final</div>
           <h2>Selección del modelo.</h2>
           <p class="lead">Con base en los resultados, se seleccionó la Regresión Logística Binaria como modelo final por su alta precisión y eficiencia.</p>
         </div>
@@ -936,7 +915,7 @@
     <section id="comparacion">
       <div class="container">
         <div class="section-heading reveal">
-          <div class="section-kicker">15 · Comparación y aporte</div>
+          <div class="section-kicker">14 · Comparación y aporte</div>
           <h2>¿Qué hace diferente a TrueFace?</h2>
           <p class="lead">Existen enfoques basados en CNN, análisis forense y señales fisiológicas. El problema común es la generalización cuando aparecen nuevos datasets.</p>
         </div>
@@ -959,7 +938,7 @@
     <section id="limitaciones">
       <div class="container">
         <div class="section-heading reveal">
-          <div class="section-kicker">16 · Limitaciones</div>
+          <div class="section-kicker">15 · Limitaciones</div>
           <h2>Desafíos del proyecto.</h2>
           <p class="lead">Aunque el rendimiento fue alto, el proyecto enfrentó retos de procesamiento y dependencia de recursos computacionales.</p>
         </div>
@@ -975,7 +954,7 @@
     <section id="futuro">
       <div class="container grid-2">
         <div class="reveal">
-          <div class="section-kicker">17 · Trabajo futuro</div>
+          <div class="section-kicker">16 · Trabajo futuro</div>
           <h2>Próximos pasos.</h2>
           <p class="lead">Las mejoras propuestas buscan optimizar el sistema y acercarlo a una implementación real.</p>
         </div>
