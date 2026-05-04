@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeepFake vs Real: TrueFace | Presentación Web</title>
+  <link rel="shortcut icon" href="./670678e9-ccd6-4d0f-b6bb-067842cfbe04.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #000000;
+      --card: rgba(8, 28, 45, 0.78);
+      --text: #eaf6ff;
+      --muted: #b7c9da;
+      --line: rgba(125, 211, 252, 0.20);
+      --primary: #38bdf8;
+      --primary-2: #7dd3fc;
+      --accent: #60a5fa;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --success: #34d399;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+      --radius: 28px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #000000;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    #networkBackground {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 1;
+      background: #000000;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 4%, rgba(56, 189, 248, 0.12), transparent 28%),
+        radial-gradient(circle at 86% 20%, rgba(96, 165, 250, 0.10), transparent 28%),
+        rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(0.15px);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); z-index: 1000; }
+
+    .nav {
+      position: fixed;
+      top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 999;
+      width: min(1180px, calc(100% - 28px));
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 12px 14px 12px 18px;
+      border: 1px solid rgba(125, 211, 252, 0.18);
+      border-radius: 999px;
+      background: rgba(7, 24, 39, 0.76);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.30);
+      backdrop-filter: blur(20px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: -0.04em; color: #eaf6ff; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; color: #03111f; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 10px 26px rgba(56, 189, 248, 0.28); font-weight: 950; }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links a { padding: 9px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #b7c9da; transition: 0.2s ease; }
+    .nav-links a:hover, .nav-links a.active { background: rgba(56, 189, 248, 0.14); color: #e0f7ff; }
+    .nav-pill { padding: 10px 15px; border-radius: 999px; color: #03111f; font-size: 13px; font-weight: 850; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 14px 34px rgba(56, 189, 248, 0.27); }
+
+    section { position: relative; padding: 96px 24px; }
+    .container { width: min(1120px, 100%); margin: 0 auto; }
+    .hero { min-height: 100vh; display: grid; align-items: center; padding-top: 132px; }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 48px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; width: fit-content; margin-bottom: 22px; padding: 9px 14px; border: 1px solid rgba(125, 211, 252, 0.25); border-radius: 999px; background: rgba(8, 28, 45, 0.72); color: #c8f5ff; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22); backdrop-filter: blur(14px); font-size: 13px; font-weight: 760; }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--success); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.14); }
+    h1 { max-width: 920px; font-size: clamp(46px, 6.8vw, 82px); line-height: 1.03; letter-spacing: -0.025em; color: #f8fafc; text-shadow: 0 18px 46px rgba(0, 0, 0, 0.28); }
+    h2 { font-size: clamp(34px, 5vw, 58px); line-height: 1.06; letter-spacing: -0.025em; color: #f8fafc; text-shadow: 0 14px 34px rgba(0, 0, 0, 0.18); }
+    h3 { color: #f8fafc; }
+    .gradient-text { background: linear-gradient(120deg, #38bdf8, #7dd3fc, #93c5fd); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p, .lead { max-width: 760px; margin-top: 18px; color: #cbd5e1; font-size: 18px; line-height: 1.75; }
+    .hero p { margin-top: 24px; font-size: 20px; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 34px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 19px; border: 1px solid transparent; border-radius: 999px; cursor: pointer; font-weight: 850; transition: 0.2s ease; }
+    .button.primary { color: #03111f; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 18px 34px rgba(56, 189, 248, 0.24); }
+    .button.secondary { color: #d8efff; background: rgba(8, 28, 45, 0.72); border-color: rgba(125, 211, 252, 0.22); box-shadow: 0 14px 32px rgba(0, 0, 0, 0.20); }
+    .button:hover { transform: translateY(-2px); }
+
+    .hero-card, .card, .stat, .chart-card, .flow-step, .metric-card {
+      border: 1px solid rgba(125, 211, 252, 0.18);
+      background: rgba(8, 28, 45, 0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      border-radius: var(--radius);
+    }
+    .hero-card { min-height: 520px; padding: 30px; border-radius: 38px; overflow: hidden; }
+    .scan-card { position: relative; display: grid; gap: 18px; }
+    .fake-face {
+      min-height: 250px;
+      border: 1px solid rgba(125, 211, 252, 0.18);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 48% 35%, rgba(125, 211, 252, 0.34), transparent 18%),
+        radial-gradient(circle at 34% 32%, rgba(255,255,255,0.26), transparent 5%),
+        radial-gradient(circle at 62% 32%, rgba(255,255,255,0.26), transparent 5%),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.18) 0 49.5%, rgba(244, 63, 94, 0.16) 50.5% 100%),
+        rgba(3, 17, 31, 0.92);
+      overflow: hidden;
+      position: relative;
+    }
+    .fake-face::before { content: ""; position: absolute; inset: 28px 88px; border-radius: 45% 45% 42% 42%; border: 2px solid rgba(186, 230, 253, 0.42); box-shadow: inset 0 0 50px rgba(56, 189, 248, 0.12); }
+    .fake-face::after { content: "REAL | FAKE"; position: absolute; left: 24px; bottom: 24px; padding: 9px 13px; border-radius: 999px; color: #d8efff; background: rgba(0, 0, 0, 0.42); border: 1px solid rgba(125, 211, 252, 0.18); font-weight: 900; letter-spacing: 0.18em; font-size: 12px; }
+    .scan-lines { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, transparent 0 10px, rgba(125, 211, 252, 0.08) 10px 11px); animation: scan 2.8s linear infinite; }
+    @keyframes scan { from { transform: translateY(-20px); } to { transform: translateY(20px); } }
+    .result-box { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .result-pill { padding: 16px; border-radius: 22px; background: rgba(3, 17, 31, 0.72); border: 1px solid rgba(125, 211, 252, 0.16); }
+    .result-pill strong { display: block; font-size: 26px; color: #f8fafc; }
+    .result-pill span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+
+    .section-heading { max-width: 850px; margin-bottom: 42px; }
+    .section-kicker { margin-bottom: 12px; color: #67e8f9; font-size: 13px; font-weight: 850; letter-spacing: 0.22em; text-transform: uppercase; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .pad { padding: 28px; }
+    .icon-box { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 18px; border-radius: 18px; color: #bffaff; background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(125, 211, 252, 0.16); font-weight: 900; }
+    .card p, .card li, .flow-step p, .metric-card p { color: var(--muted); line-height: 1.7; }
+    .card ul, .metric-card ul { margin: 14px 0 0 18px; }
+    .example-box { margin-top: 20px; padding: 18px; border: 1px solid rgba(125, 211, 252, 0.18); border-radius: 22px; background: linear-gradient(135deg, rgba(8, 34, 54, 0.88), rgba(10, 45, 67, 0.78)); color: #eaf6ff; }
+    .code-pill { display: inline-flex; align-items: center; gap: 8px; margin: 5px 5px 0 0; padding: 8px 11px; border-radius: 999px; color: #d9fbff; background: rgba(56, 189, 248, 0.16); border: 1px solid rgba(125, 211, 252, 0.18); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; font-weight: 700; }
+
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 32px; }
+    .flow-step { position: relative; min-height: 170px; padding: 22px; }
+    .flow-step:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -16px; transform: translateY(-50%); z-index: 3; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; color: #03111f; background: linear-gradient(135deg, var(--primary), var(--primary-2)); font-weight: 950; }
+
+    .big-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+    .stat { padding: 28px; }
+    .stat strong { display: block; font-size: clamp(38px, 5vw, 62px); line-height: 1; letter-spacing: -0.07em; background: linear-gradient(120deg, #38bdf8, #7dd3fc, #93c5fd); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .stat span { display: block; margin-top: 10px; color: #b7c9da; font-weight: 700; }
+
+    .pipeline { margin-top: 28px; padding: 26px; border-radius: 30px; background: rgba(3, 17, 31, 0.88); border: 1px solid rgba(125, 211, 252, 0.16); box-shadow: var(--shadow); backdrop-filter: blur(18px); overflow: hidden; }
+    .pipeline-row { display: grid; grid-template-columns: 1fr 48px 1fr 48px 1fr 48px 1fr; align-items: center; gap: 12px; }
+    .pipeline-node { min-height: 112px; padding: 18px; border: 1px solid rgba(125, 211, 252, 0.16); border-radius: 24px; background: rgba(56, 189, 248, 0.07); }
+    .pipeline-node span { display: block; margin-top: 8px; color: #bae6fd; font-size: 13px; line-height: 1.5; }
+    .arrow-circle { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 999px; background: rgba(56, 189, 248, 0.18); color: #bffaff; font-size: 24px; font-weight: 900; }
+
+    .theory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .theory-card { position: relative; min-height: 230px; padding: 26px; border: 1px solid rgba(125, 211, 252, 0.18); border-radius: 28px; background: rgba(8, 28, 45, 0.76); box-shadow: var(--shadow); backdrop-filter: blur(18px); overflow: hidden; }
+    .theory-card::before { content: ""; position: absolute; width: 180px; height: 180px; right: -80px; top: -80px; border-radius: 999px; background: radial-gradient(circle, rgba(56, 189, 248, 0.20), transparent 70%); }
+    .theory-tag { position: relative; z-index: 2; display: inline-flex; width: fit-content; margin-bottom: 16px; padding: 7px 11px; border: 1px solid rgba(125, 211, 252, 0.18); border-radius: 999px; color: #bffaff; background: rgba(56, 189, 248, 0.12); font-size: 12px; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
+    .theory-card h3, .theory-card p { position: relative; z-index: 2; }
+    .theory-card h3 { margin-bottom: 12px; font-size: 25px; letter-spacing: -0.015em; }
+    .theory-card p { color: #b7c9da; line-height: 1.75; }
+
+    .chart-card { height: 410px; padding: 26px; }
+    canvas { max-width: 100%; height: auto; }
+    .comparison { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 24px; background: rgba(8, 28, 45, 0.84); border: 1px solid rgba(125, 211, 252, 0.18); box-shadow: var(--shadow); color: #eaf6ff; }
+    .comparison th, .comparison td { padding: 18px; border-bottom: 1px solid rgba(125, 211, 252, 0.14); text-align: left; vertical-align: top; }
+    .comparison th { color: #bffaff; background: rgba(56, 189, 248, 0.12); font-size: 14px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .comparison tr:last-child td { border-bottom: 0; }
+    .comparison td { color: #b7c9da; }
+    .comparison td strong { color: #f8fafc; }
+
+    .timeline { display: grid; gap: 16px; margin-top: 30px; }
+    .timeline-item { display: grid; grid-template-columns: 62px 1fr; gap: 18px; align-items: start; }
+    .timeline-dot { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 20px; color: #03111f; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 14px 30px rgba(56, 189, 248, 0.22); font-weight: 950; }
+    .final-quote { padding: 52px; border-radius: 38px; color: white; background: radial-gradient(circle at 20% 10%, rgba(125, 211, 252, 0.30), transparent 34%), linear-gradient(135deg, rgba(3, 17, 31, 0.94), rgba(14, 55, 84, 0.92) 55%, rgba(7, 89, 133, 0.90)); box-shadow: var(--shadow); text-align: center; border: 1px solid rgba(125, 211, 252, 0.18); }
+    .final-quote h2 { max-width: 890px; margin: 0 auto; color: white; }
+    .final-quote p { max-width: 800px; margin: 22px auto 0; color: #dbeafe; font-size: 18px; line-height: 1.8; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+    @media (max-width: 1100px) {
+      .nav { width: calc(100% - 24px); }
+      .nav-links a { padding: 8px 8px; font-size: 11px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 34px; }
+      .hero { min-height: auto; padding-top: 120px; }
+      .hero-card { max-width: 680px; width: 100%; }
+    }
+    @media (max-width: 960px) {
+      .nav-links, .nav-pill { display: none; }
+      .hero-grid, .grid-2, .grid-3, .grid-4, .big-stats, .flow, .theory-grid { grid-template-columns: 1fr; }
+      .pipeline-row { grid-template-columns: 1fr; }
+      .arrow-circle { margin: -2px auto; transform: rotate(90deg); }
+      .flow { gap: 26px; }
+      .flow-step { min-height: auto; }
+      .flow-step:not(:last-child)::after { top: auto; right: 50%; bottom: -28px; transform: translateX(50%) rotate(90deg); }
+      .comparison { display: block; overflow-x: auto; white-space: nowrap; }
+      .comparison th, .comparison td { min-width: 220px; white-space: normal; }
+    }
+    @media (max-width: 640px) {
+      section { padding: 62px 16px; }
+      .hero { padding-top: 98px; }
+      h1 { font-size: clamp(42px, 14vw, 68px); }
+      h2 { font-size: clamp(30px, 9vw, 44px); }
+      .hero p, .lead { font-size: 16px; line-height: 1.7; }
+      .button { width: 100%; }
+      .hero-card { padding: 18px; border-radius: 28px; }
+      .result-box { grid-template-columns: 1fr; }
+      .pad, .stat, .chart-card { padding: 22px; }
+      .chart-card { height: auto; min-height: 330px; }
+      .timeline-item { grid-template-columns: 44px 1fr; gap: 12px; }
+      .timeline-dot { width: 42px; height: 42px; border-radius: 16px; }
+      .final-quote { padding: 34px 22px; }
+    }
+
+
+    /* Header a todo lo largo de la pantalla */
+    .nav {
+      top: 0;
+      left: 0;
+      transform: none;
+      width: 100%;
+      max-width: none;
+      border-radius: 0;
+      padding: 14px 28px;
+      border-left: 0;
+      border-right: 0;
+      border-top: 0;
+    }
+
+    .hero {
+      padding-top: 150px;
+    }
+
+    @media (max-width: 1100px) {
+      .nav {
+        width: 100%;
+        padding: 12px 20px;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .nav {
+        top: 0;
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        padding: 11px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="networkBackground" aria-hidden="true"></canvas>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <nav class="nav">
+    <a href="#inicio" class="brand" aria-label="Ir al inicio">
+      <span class="brand-mark">TF</span>
+      <span>TrueFace</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#problema">Problema</a>
+      <a href="#objetivo">Objetivo</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#preprocesamiento">Preprocesamiento</a>
+      <a href="#modelo">Modelo</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#comparacion">Aporte</a>
+      <a href="#futuro">Futuro</a>
+    </div>
+    <a href="#conclusion" class="nav-pill">Ver conclusión</a>
+  </nav>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <div class="eyebrow"><span class="dot"></span> Sistema de Machine Learning para detección facial sintética</div>
+          <h1>DeepFake vs Real: <span class="gradient-text">TrueFace</span></h1>
+          <p>
+            Aplicación basada en Machine Learning para detectar si una imagen facial es real
+            o generada mediante deepfake. El sistema busca proteger la seguridad digital ante
+            identidades falsas cada vez más realistas.
+          </p>
+          <div class="hero-actions">
+            <a href="#problema" class="button primary">Iniciar recorrido <span>→</span></a>
+            <a href="#resultados" class="button secondary"><i class="fa-brands fa-github"></i> Ver Github</a>
+          </div>
+        </div>
+
+        <div class="hero-card reveal scan-card">
+          <div class="fake-face"><div class="scan-lines"></div></div>
+          <div class="result-box">
+            <div class="result-pill"><strong>99.8%</strong><span>Accuracy del mejor modelo</span></div>
+            <div class="result-pill"><strong>ViT</strong><span>Extractor de características</span></div>
+          </div>
+          <div class="example-box">
+            <strong>Flujo visual:</strong><br />Imagen de entrada → modelo → resultado: <span class="code-pill">Real</span> o <span class="code-pill">Fake</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="problema">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">01 · Problema</div>
+          <h2>Identidades falsas en plataformas digitales.</h2>
+          <p class="lead">
+            Los deepfakes permiten crear rostros e identidades falsas cada vez más realistas,
+            lo que representa un riesgo para la seguridad digital.
+          </p>
+        </div>
+        <div class="grid-2">
+          <div class="card pad reveal">
+            <div class="icon-box"><i class="fa-solid fa-user-secret"></i></div>
+            <h3>Riesgo principal</h3>
+            <p>Un perfil falso puede usar una imagen generada por IA para hacerse pasar por una persona real.</p>
+          </div>
+          <div class="card pad reveal">
+            <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Respuesta del proyecto</h3>
+            <p>TrueFace funciona como una barrera defensiva capaz de detectar patrones visuales invisibles al ojo humano.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="objetivo">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">02 · Objetivo</div>
+          <h2>Clasificar automáticamente imágenes faciales.</h2>
+          <p class="lead">
+            El objetivo es desarrollar un sistema capaz de clasificar imágenes faciales como reales o deepfake,
+            con un flujo simple y aplicable en contextos de validación de identidad.
+          </p>
+          <div class="example-box"><strong>Ejemplo:</strong> Imagen de entrada → modelo → resultado: <span class="code-pill">Real</span> o <span class="code-pill">Fake</span></div>
+        </div>
+        <div class="card pad reveal">
+          <div class="icon-box">DF</div>
+          <h3>¿Qué es un deepfake?</h3>
+          <p>Un deepfake es una imagen, video o audio manipulado con redes neuronales para simular rostros, voces o gestos reales.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="dataset">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">03 · Dataset utilizado</div>
+          <h2>Deepfake-vs-Real-60K.</h2>
+          <p class="lead">
+            Se utilizó un dataset público con imágenes reales y falsas, seleccionado por su alta calidad
+            y por su enfoque en detección facial sintética, un problema clave de seguridad digital.
+          </p>
+        </div>
+        <div class="big-stats reveal">
+          <div class="stat"><strong><span class="dataset-count" data-target="60000" data-format="comma">0</span></strong><span>imágenes de alta resolución</span></div>
+          <div class="stat"><strong>50/50</strong><span>distribución Real / Fake</span></div>
+          <div class="stat"><strong>0/1</strong><span>0 = Fake · 1 = Real</span></div>
+        </div>
+        <div class="grid-3" style="margin-top: 24px;">
+          <div class="card pad reveal"><h3>Balanceado</h3><p>El dataset contiene una distribución equilibrada: 50% imágenes reales y 50% imágenes fake.</p></div>
+          <div class="card pad reveal"><h3>Diversidad visual</h3><p>Incluye variedad en iluminación, etnias y tipos de manipulación.</p></div>
+          <div class="card pad reveal"><h3>Origen</h3><p>Proviene de los subconjuntos Deepfakes QA-Patch1 y Patch2.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="obtencion">
+      <div class="container grid-2">
+        <div class="card pad reveal">
+          <div class="section-kicker">04 · Obtención de datos</div>
+          <h2>Descarga automatizada.</h2>
+          <p class="lead">El dataset se obtuvo de forma automatizada usando Python y <strong>kagglehub</strong>, asegurando reproducibilidad del flujo de trabajo.</p>
+          <div class="example-box"><strong>Flujo:</strong> Kaggle / Hugging Face → descarga automatizada → carpeta local.</div>
+        </div>
+        <div class="card pad reveal">
+          <h3>Importancia</h3>
+          <p>Automatizar la descarga permite que el entorno de trabajo cuente con los datos necesarios de forma consistente y reproducible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="preprocesamiento">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">05 · Preprocesamiento</div>
+          <h2>Preparando las imágenes.</h2>
+          <p class="lead">Antes de entrenar, las imágenes fueron limpiadas, recortadas y ajustadas para que el modelo pudiera procesarlas correctamente.</p>
+        </div>
+        <div class="flow">
+          <div class="flow-step reveal"><h3>1. Verificación</h3><p>Se revisan imágenes corruptas o inválidas.</p></div>
+          <div class="flow-step reveal"><h3>2. Detección facial</h3><p>Se usa Haar Cascades para localizar el rostro.</p></div>
+          <div class="flow-step reveal"><h3>3. Cropping</h3><p>Se recorta el rostro con margen del 25%.</p></div>
+          <div class="flow-step reveal"><h3>4. Resize</h3><p>Se redimensiona a 224×224 px.</p></div>
+          <div class="flow-step reveal"><h3>5. Modelo</h3><p>La imagen queda lista para el pipeline de ML.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tensores">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">06 · Transformación a tensores</div>
+          <h2>De imágenes a datos para el modelo.</h2>
+          <p class="lead">
+            Después del preprocesamiento, las imágenes se transforman en datos numéricos. Cada píxel contiene valores de color y esos valores se convierten en una matriz procesable.
+          </p>
+          <div class="example-box"><strong>Representación:</strong><br />Imagen 224×224 → datos numéricos → tensor.</div>
+        </div>
+        <div class="grid-2">
+          <div class="card pad reveal"><h3>Normalización</h3><p>Se ajustan los valores de píxeles usando el procesador del Vision Transformer.</p></div>
+          <div class="card pad reveal"><h3>Etiquetas</h3><p><span class="code-pill">0 = Fake</span><span class="code-pill">1 = Real</span></p></div>
+          <div class="card pad reveal"><h3>Serialización</h3><p>Imágenes y etiquetas se agrupan en un solo archivo <span class="code-pill">.pt</span>.</p></div>
+          <div class="card pad reveal"><h3>Eficiencia</h3><p>Se evita cargar miles de archivos individuales durante el entrenamiento.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelo">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">07 · Modelo base</div>
+          <h2>Vision Transformer como extractor de características.</h2>
+          <p class="lead">
+            El ViT divide la imagen en parches y analiza relaciones globales entre ellos,
+            permitiendo detectar patrones de manipulación distribuidos en todo el rostro.
+          </p>
+        </div>
+        <div class="pipeline reveal">
+          <div class="pipeline-row">
+            <div class="pipeline-node"><strong>Tensor</strong><span>Imagen convertida en números.</span></div><div class="arrow-circle">→</div>
+            <div class="pipeline-node"><strong>Patches</strong><span>División de la imagen en pequeñas partes.</span></div><div class="arrow-circle">→</div>
+            <div class="pipeline-node"><strong>Relaciones</strong><span>Análisis global mediante Transformer.</span></div><div class="arrow-circle">→</div>
+            <div class="pipeline-node"><strong>Predicción</strong><span>Clasificación final: Real o Fake.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modelos-comparados">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">08 · Modelos comparados</div>
+          <h2>Benchmarking de algoritmos.</h2>
+          <p class="lead">Se evaluaron diferentes modelos de Machine Learning para determinar cuál ofrecía mejor rendimiento en la clasificación de imágenes reales y deepfake.</p>
+        </div>
+        <div class="theory-grid">
+          <div class="theory-card reveal"><div class="theory-tag">Base</div><h3>Regresión Logística</h3><p>Modelo base que predice la probabilidad de que una imagen sea fake.</p></div>
+          <div class="theory-card reveal"><div class="theory-tag">L2</div><h3>Ridge</h3><p>Reduce el sobreajuste penalizando coeficientes grandes.</p></div>
+          <div class="theory-card reveal"><div class="theory-tag">L1</div><h3>Lasso</h3><p>Selecciona automáticamente características relevantes.</p></div>
+          <div class="theory-card reveal"><div class="theory-tag">L1 + L2</div><h3>Elastic Net</h3><p>Combina L1 y L2 para lograr balance entre simplicidad y estabilidad.</p></div>
+          <div class="theory-card reveal"><div class="theory-tag">Complejidad</div><h3>Polinómica + PCA</h3><p>Captura relaciones más complejas y reduce dimensionalidad para mejorar eficiencia.</p></div>
+          <div class="theory-card reveal"><div class="theory-tag">Selección</div><h3>Evaluación comparativa</h3><p>Los modelos se compararon con métricas de clasificación y error para seleccionar el más confiable.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="entrenamiento">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">09 · Entrenamiento y validación</div>
+          <h2>Preparación para evaluar el modelo.</h2>
+          <p class="lead">Para asegurar una evaluación justa, el dataset se dividió en tres conjuntos y se conservó el balanceo de clases.</p>
+        </div>
+        <div class="grid-3">
+          <div class="stat reveal"><strong>70%</strong><span>Entrenamiento: aprendizaje de patrones.</span></div>
+          <div class="stat reveal"><strong>15%</strong><span>Validación: ajuste y prevención de sobreajuste.</span></div>
+          <div class="stat reveal"><strong>15%</strong><span>Prueba: evaluación final.</span></div>
+        </div>
+        <div class="card pad reveal" style="grid-column: 1 / -1;"><h3>Balanceo de clases</h3><p>El dataset ya se encontraba balanceado en 50% real y 50% fake, por lo que no fue necesario aplicar oversampling ni undersampling.</p></div>
+      </div>
+    </section>
+
+    <section id="resultados">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">10 · Resultados y evaluación</div>
+          <h2>¿Qué tan bien funciona TrueFace?</h2>
+          <p class="lead">Se evaluaron cinco modelos usando métricas de clasificación y error para identificar cuál detectaba mejor imágenes reales y deepfake.</p>
+        </div>
+        <div class="grid-2">
+          <div class="chart-card reveal"><h3>Métricas de clasificación</h3><canvas id="barChart" width="520" height="310" aria-label="Gráfica de métricas de clasificación"></canvas></div>
+          <div class="chart-card reveal"><h3>Análisis de error</h3><canvas id="errorChart" width="520" height="310" aria-label="Gráfica de error"></canvas></div>
+        </div>
+        <div class="grid-3" style="margin-top: 24px;">
+          <div class="card pad reveal"><h3>Accuracy</h3><p>Porcentaje total de aciertos.</p></div>
+          <div class="card pad reveal"><h3>Precision</h3><p>Qué tan confiables son las predicciones positivas.</p></div>
+          <div class="card pad reveal"><h3>Recall</h3><p>Qué tantos deepfakes logra detectar el sistema.</p></div>
+          <div class="card pad reveal"><h3>F1-Score</h3><p>Equilibrio entre precision y recall.</p></div>
+          <div class="card pad reveal"><h3>MSE / RMSE</h3><p>Nivel de error del modelo.</p></div>
+          <div class="card pad reveal"><h3>R²</h3><p>Qué tan bien se ajusta el modelo a los datos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mejor-modelo">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">11 · Mejor modelo</div>
+          <h2>Regresión Logística Binaria fue el modelo con mejor rendimiento general.</h2>
+          <p class="lead">El modelo combinó alta precisión, bajo error y entrenamiento rápido, lo que lo vuelve ideal para aplicaciones en tiempo real.</p>
+        </div>
+        <div class="big-stats reveal">
+          <div class="stat"><strong>99.8%</strong><span>Accuracy</span></div>
+          <div class="stat"><strong>99.9%</strong><span>Precision</span></div>
+          <div class="stat"><strong>99.7%</strong><span>Recall</span></div>
+        </div>
+        <div class="grid-3" style="margin-top: 18px;">
+          <div class="stat reveal"><strong>99.8%</strong><span>F1-Score</span></div>
+          <div class="stat reveal"><strong>0.0021</strong><span>MSE</span></div>
+          <div class="stat reveal"><strong>0.9915</strong><span>R²</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="confusion">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">12 · Matriz de confusión</div>
+          <h2>Errores detectados en prueba.</h2>
+          <p class="lead">El sistema registró muy pocos errores en el conjunto de prueba.</p>
+          <div class="example-box"><strong>Errores:</strong><br />Real marcado como fake: <span class="code-pill">4 casos</span><br />Fake marcado como real: <span class="code-pill">11 casos</span></div>
+        </div>
+        <div class="card pad reveal">
+          <h3>Ejemplo visual de predicción</h3>
+          <p><span class="code-pill">Imagen real ✅ → Real</span></p>
+          <p><span class="code-pill">Imagen fake ✅ → Fake</span></p>
+          <p><span class="code-pill">Imagen real ❌ → Fake</span></p>
+          <p><span class="code-pill">Imagen fake ❌ → Real</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="analisis-error">
+      <div class="container grid-2">
+        <div class="card pad reveal">
+          <div class="section-kicker">13 · Análisis de error</div>
+          <h2>¿Qué tan confiable es el modelo?</h2>
+          <p class="lead">Se analizaron métricas de error para evaluar precisión y estabilidad.</p>
+        </div>
+        <div class="card pad reveal">
+          <h3>Conclusiones clave</h3>
+          <ul>
+            <li>Regresión Logística presentó el menor error.</li>
+            <li>Las predicciones son muy cercanas a los valores reales.</li>
+            <li>El modelo captura casi toda la variabilidad de los datos, con R² ≈ 0.99.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="final-modelo">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">14 · Modelo final</div>
+          <h2>Selección del modelo.</h2>
+          <p class="lead">Con base en los resultados, se seleccionó la Regresión Logística Binaria como modelo final por su alta precisión y eficiencia.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card pad reveal"><h3>Alta precisión</h3><p>Aproximadamente 99.8%.</p></div>
+          <div class="card pad reveal"><h3>Bajo error</h3><p>MSE de 0.0021.</p></div>
+          <div class="card pad reveal"><h3>Rápido entrenamiento</h3><p>Diseñado para ser eficiente.</p></div>
+          <div class="card pad reveal"><h3>Tiempo real</h3><p>Ideal para aplicaciones de validación instantánea.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="comparacion">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">15 · Comparación y aporte</div>
+          <h2>¿Qué hace diferente a TrueFace?</h2>
+          <p class="lead">Existen enfoques basados en CNN, análisis forense y señales fisiológicas. El problema común es la generalización cuando aparecen nuevos datasets.</p>
+        </div>
+        <div class="reveal">
+          <table class="comparison">
+            <thead><tr><th>Sistema / enfoque</th><th>Cómo funciona</th><th>Observación</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Deepware Scanner</strong></td><td>Usa CNN para detectar patrones en píxeles.</td><td>Enfoque visual local.</td></tr>
+              <tr><td><strong>Microsoft Video Authenticator</strong></td><td>Detecta artefactos generados por IA.</td><td>Enfoque forense digital.</td></tr>
+              <tr><td><strong>Intel FakeCatcher</strong></td><td>Analiza señales fisiológicas como flujo sanguíneo.</td><td>Busca señales biológicas difíciles de replicar.</td></tr>
+              <tr><td><strong>Deepfake-o-Meter</strong></td><td>Combina múltiples modelos.</td><td>Integra varios detectores.</td></tr>
+              <tr><td><strong>TrueFace</strong></td><td>Usa Vision Transformer para capturar relaciones globales.</td><td>Busca mejorar la generalización más allá de patrones locales.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="example-box reveal"><strong>Nuestra propuesta:</strong> uso de Vision Transformer, captura de relaciones globales y mejor capacidad de generalización.</div>
+      </div>
+    </section>
+
+    <section id="limitaciones">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">16 · Limitaciones</div>
+          <h2>Desafíos del proyecto.</h2>
+          <p class="lead">Aunque el rendimiento fue alto, el proyecto enfrentó retos de procesamiento y dependencia de recursos computacionales.</p>
+        </div>
+        <div class="grid-4">
+          <div class="card pad reveal"><h3>Alto costo computacional</h3><p>El volumen de 50k+ imágenes exige procesamiento intensivo.</p></div>
+          <div class="card pad reveal"><h3>Muestreo</h3><p>Se requiere reducir el dataset para hacerlo manejable.</p></div>
+          <div class="card pad reveal"><h3>Hardware potente</h3><p>El pipeline depende de equipos con buena capacidad de cómputo.</p></div>
+          <div class="card pad reveal"><h3>Latencia</h3><p>El procesamiento de imágenes puede ser un cuello de botella.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="futuro">
+      <div class="container grid-2">
+        <div class="reveal">
+          <div class="section-kicker">17 · Trabajo futuro</div>
+          <h2>Próximos pasos.</h2>
+          <p class="lead">Las mejoras propuestas buscan optimizar el sistema y acercarlo a una implementación real.</p>
+        </div>
+        <div class="timeline reveal">
+          <div class="timeline-item"><div class="timeline-dot">1</div><div class="card pad"><h3>Reducir dimensionalidad</h3><p>Aplicar PCA para equilibrar velocidad y precisión.</p></div></div>
+          <div class="timeline-item"><div class="timeline-dot">2</div><div class="card pad"><h3>Ensemble learning</h3><p>Combinar modelos para reducir el margen de error.</p></div></div>
+          <div class="timeline-item"><div class="timeline-dot">3</div><div class="card pad"><h3>Detectar outliers</h3><p>Refinar la limpieza de datos y evitar sesgos.</p></div></div>
+          <div class="timeline-item"><div class="timeline-dot">4</div><div class="card pad"><h3>Crear API</h3><p>Permitir uso en tiempo real desde aplicaciones externas.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="conclusion">
+      <div class="container">
+        <div class="final-quote reveal">
+          <h2>TrueFace demuestra que el Machine Learning puede enfrentar desafíos reales de seguridad digital.</h2>
+          <p>
+            Se logró detectar deepfakes con alta precisión (~99.8%). El Vision Transformer permitió capturar patrones complejos en imágenes,
+            y el modelo final es eficiente y aplicable en entornos reales. El proyecto muestra que el ML no solo automatiza procesos,
+            sino que también puede convertirse en una herramienta clave contra la suplantación de identidad.
+          </p>
+          <div class="hero-actions" style="justify-content:center;"><a href="#inicio" class="button secondary">Volver al inicio</a></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const networkCanvas = document.getElementById("networkBackground");
+    const networkCtx = networkCanvas.getContext("2d");
+    let nodes = [];
+
+    function resizeNetworkCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      networkCanvas.width = window.innerWidth * dpr;
+      networkCanvas.height = window.innerHeight * dpr;
+      networkCanvas.style.width = window.innerWidth + "px";
+      networkCanvas.style.height = window.innerHeight + "px";
+      networkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      createNetworkNodes();
+    }
+
+    function createNetworkNodes() {
+      const area = window.innerWidth * window.innerHeight;
+      const count = Math.min(95, Math.max(42, Math.floor(area / 18000)));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: Math.random() * 1.8 + 1.1,
+        pulse: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function drawNetworkBackground() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      networkCtx.clearRect(0, 0, width, height);
+      networkCtx.fillStyle = "#000000";
+      networkCtx.fillRect(0, 0, width, height);
+
+      nodes.forEach(node => {
+        node.x += node.vx;
+        node.y += node.vy;
+        node.pulse += 0.018;
+        if (node.x < -20) node.x = width + 20;
+        if (node.x > width + 20) node.x = -20;
+        if (node.y < -20) node.y = height + 20;
+        if (node.y > height + 20) node.y = -20;
+      });
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i];
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const maxDistance = 185;
+          if (distance < maxDistance) {
+            const opacity = (1 - distance / maxDistance) * 0.42;
+            const gradient = networkCtx.createLinearGradient(a.x, a.y, b.x, b.y);
+            gradient.addColorStop(0, `rgba(125, 211, 252, ${opacity})`);
+            gradient.addColorStop(1, `rgba(186, 230, 253, ${opacity})`);
+            networkCtx.strokeStyle = gradient;
+            networkCtx.lineWidth = 1.35;
+            networkCtx.beginPath();
+            networkCtx.moveTo(a.x, a.y);
+            networkCtx.lineTo(b.x, b.y);
+            networkCtx.stroke();
+          }
+        }
+      }
+
+      nodes.forEach(node => {
+        const pulseSize = Math.sin(node.pulse) * 0.7;
+        networkCtx.beginPath();
+        networkCtx.arc(node.x, node.y, node.r + pulseSize, 0, Math.PI * 2);
+        networkCtx.fillStyle = "rgba(125, 211, 252, 0.95)";
+        networkCtx.fill();
+        networkCtx.beginPath();
+        networkCtx.arc(node.x, node.y, node.r + 7 + pulseSize, 0, Math.PI * 2);
+        networkCtx.fillStyle = "rgba(125, 211, 252, 0.08)";
+        networkCtx.fill();
+      });
+
+      requestAnimationFrame(drawNetworkBackground);
+    }
+
+    window.addEventListener("resize", () => { resizeNetworkCanvas(); drawBarChart(); drawErrorChart(); });
+    resizeNetworkCanvas();
+    drawNetworkBackground();
+
+    const reveals = document.querySelectorAll(".reveal");
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add("visible");
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => revealObserver.observe(el));
+
+    const progressBar = document.getElementById("progressBar");
+    const navLinks = document.querySelectorAll(".nav-links a");
+    const sections = [...document.querySelectorAll("main section")];
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.width = `${docHeight ? (scrollTop / docHeight) * 100 : 0}%`;
+      let current = "";
+      sections.forEach(section => {
+        if (scrollTop >= section.offsetTop - 180) current = section.getAttribute("id");
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${current}`);
+      });
+    });
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + width, y, x + width, y + height, r);
+      ctx.arcTo(x + width, y + height, x, y + height, r);
+      ctx.arcTo(x, y + height, x, y, r);
+      ctx.arcTo(x, y, x + width, y, r);
+      ctx.closePath();
+    }
+
+    function drawBarChart() {
+      const canvas = document.getElementById("barChart");
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      const displayWidth = Math.min(520, Math.max(300, parent.clientWidth - 28));
+      canvas.width = displayWidth;
+      canvas.height = window.innerWidth <= 640 ? 285 : 310;
+      const ctx = canvas.getContext("2d");
+      const data = [
+        { label: "Accuracy", value: 99.8 },
+        { label: "Precision", value: 99.9 },
+        { label: "Recall", value: 99.7 },
+        { label: "F1", value: 99.8 }
+      ];
+      const w = canvas.width, h = canvas.height, padding = 52;
+      const chartW = w - padding * 2, chartH = h - padding * 2;
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = "rgba(125, 211, 252, 0.18)";
+      ctx.fillStyle = "#9fb4c8";
+      ctx.font = "12px Inter, system-ui";
+      for (let i = 0; i <= 5; i++) {
+        const y = padding + (chartH / 5) * i;
+        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
+        ctx.fillText(`${100 - i * 2}%`, 12, y + 5);
+      }
+      const barW = chartW / data.length * 0.52;
+      data.forEach((item, index) => {
+        const x = padding + index * (chartW / data.length) + (chartW / data.length - barW) / 2;
+        const barH = chartH * ((item.value - 90) / 10);
+        const y = padding + chartH - barH;
+        const gradient = ctx.createLinearGradient(0, y, 0, padding + chartH);
+        gradient.addColorStop(0, "#7dd3fc"); gradient.addColorStop(1, "#38bdf8");
+        ctx.fillStyle = gradient; roundRect(ctx, x, y, barW, barH, 12); ctx.fill();
+        ctx.fillStyle = "#eaf6ff"; ctx.font = "bold 14px Inter, system-ui"; ctx.fillText(`${item.value}%`, x - 4, y - 12);
+        ctx.fillStyle = "#9fb4c8"; ctx.font = "12px Inter, system-ui"; ctx.fillText(item.label, x - 12, h - 18);
+      });
+    }
+
+    function drawErrorChart() {
+      const canvas = document.getElementById("errorChart");
+      if (!canvas) return;
+      const parent = canvas.parentElement;
+      const displayWidth = Math.min(520, Math.max(300, parent.clientWidth - 28));
+      canvas.width = displayWidth;
+      canvas.height = window.innerWidth <= 640 ? 285 : 310;
+      const ctx = canvas.getContext("2d");
+      const data = [
+        { label: "MSE", value: 0.0021, max: 0.08 },
+        { label: "RMSE", value: 0.0459, max: 0.30 },
+        { label: "R²", value: 0.9915, max: 1.00 }
+      ];
+      const w = canvas.width, h = canvas.height, padding = 52;
+      const chartW = w - padding * 2, chartH = h - padding * 2;
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = "rgba(125, 211, 252, 0.18)";
+      ctx.fillStyle = "#9fb4c8";
+      ctx.font = "12px Inter, system-ui";
+      for (let i = 0; i <= 4; i++) {
+        const y = padding + (chartH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
+      }
+      const barW = chartW / data.length * 0.48;
+      data.forEach((item, index) => {
+        const x = padding + index * (chartW / data.length) + (chartW / data.length - barW) / 2;
+        const barH = chartH * (item.value / item.max);
+        const y = padding + chartH - barH;
+        const gradient = ctx.createLinearGradient(0, y, 0, padding + chartH);
+        gradient.addColorStop(0, "#93c5fd"); gradient.addColorStop(1, "#38bdf8");
+        ctx.fillStyle = gradient; roundRect(ctx, x, y, barW, barH, 12); ctx.fill();
+        ctx.fillStyle = "#eaf6ff"; ctx.font = "bold 14px Inter, system-ui"; ctx.fillText(`${item.value}`, x - 8, y - 12);
+        ctx.fillStyle = "#9fb4c8"; ctx.font = "12px Inter, system-ui"; ctx.fillText(item.label, x + 3, h - 18);
+      });
+    }
+
+    function animateDatasetNumbers() {
+      const counters = document.querySelectorAll("#dataset .dataset-count");
+      counters.forEach(counter => {
+        if (counter.dataset.animated === "true") return;
+        counter.dataset.animated = "true";
+        const target = Number(counter.dataset.target);
+        const useComma = counter.dataset.format === "comma";
+        const duration = 1150;
+        const start = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 4);
+          const current = Math.round(target * eased);
+          counter.textContent = useComma ? current.toLocaleString("en-US") : current;
+          if (progress < 1) requestAnimationFrame(tick);
+          else counter.textContent = useComma ? target.toLocaleString("en-US") : target;
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    const datasetSection = document.getElementById("dataset");
+    const datasetObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateDatasetNumbers();
+          datasetObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.35 });
+    if (datasetSection) datasetObserver.observe(datasetSection);
+
+    drawBarChart();
+    drawErrorChart();
+  </script>
+</body>
+</html>
