@@ -505,6 +505,51 @@
       }
     }
 
+
+
+    /* Ajuste extra: evitar tarjetas estiradas con poco contenido */
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .theory-grid,
+    .team-grid {
+      align-items: start;
+    }
+
+    .card,
+    .stat,
+    .flow-step,
+    .theory-card,
+    .team-card,
+    .metric-card {
+      height: auto;
+      align-self: start;
+    }
+
+    #confusion .card,
+    #analisis-error .card,
+    #final-modelo .card,
+    #limitaciones .card,
+    #resultados .grid-3 .card,
+    #dataset .grid-3 .card {
+      width: 100%;
+      min-height: 0;
+    }
+
+    #confusion .card.pad {
+      padding: 22px;
+    }
+
+    #confusion .card .code-pill {
+      margin-top: 8px;
+    }
+
+    #confusion .grid-2,
+    #analisis-error .grid-2,
+    #final-modelo .grid-2 {
+      align-items: start;
+    }
+
   </style>
 </head>
 <body>
